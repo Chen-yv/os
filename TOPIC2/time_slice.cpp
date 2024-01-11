@@ -6,137 +6,61 @@ Time_slice::Time_slice(QObject *parent) : QObject(parent)
 
 }
 void Time_slice::RR_MAIN(void){
-    sort(process, process + n);
-
-        int time = 0;
-
-        // int count;
-
-        queue<PCB> q;
-
-        for (int i = 0; i < n; i++)
-
+    int time = 0;//时刻设为0
+    sort(process, process+n, sortByArrivalTime);//按到达时间排序
+    queue<PCB> q;//名字为q的队列
+    for (int i = 0; i < n; i++)
+    {
+        q.push(process[i]);//循环入队
+    }
+    int times = stime; //时间片赋值
+    time = q.front().arrivetime;
+    while (true)
+    {
+        if (times == 0) // 重置时间片
         {
-
-            q.push(process[i]);
+            times = stime;
         }
-
-        int times = stime;
-
-        time = q.front().arrivetime;
-
-        while (true)
-
+        if (q.front().arrivetime > time)
         {
-
-            if (times == 0) // 重置时间片
-
-            {
-
-                times = stime;
-            }
-
-            if (q.front().arrivetime > time)
-
-            {
-
-                q.push(q.front());
-
-                q.pop();
-
-                continue;
-            }
-
-            q.front().begintime = time;
-
-            while (times != 0)
-
-            {
-
-                --times;
-
-                ++time;
-
-                --q.front().resttime;
-
-                if (q.front().resttime == 0)
-                    break;
-            }
-
-            q.front().finishtime = time;
-            output_data.id = q.front().id;
-            output_data.arrivetime = q.front().arrivetime;
-            output_data.begintime = q.front().begintime;
-            output_data.finishtime = q.front().finishtime;
-            output_data.runtime = q.front().runtime;
-            output_data.resttime = q.front().resttime;
-
-            QTimer timer;
-            timer.start(1000); // 每秒更新一次数据G
-
-
-//            connect(&timer, &QTimer::timeout, [=]() {
-                emit send_output_data(output_data, q.front().row);
-//                });
-
-
-
-            qDebug() << "进程号" << q.front().id << endl;
-
-            qDebug() << "到达时间：" << q.front().arrivetime << endl;
-
-            qDebug() << "开始运行时间: " << q.front().begintime << endl;
-
-            qDebug() << "结束运行时间: " << q.front().finishtime << endl;
-
-            if (q.front().resttime != 0)
-
-            {
-
-//                cout << "此进程运行了一个时间片，切换到下一进程！" << endl;
-
-                q.push(q.front());
-
-                q.pop();
-            }
-
-            else
-
-            {
-
-                q.front().zhouzhuantime = time - q.front().arrivetime;
-
-                q.front().weightzhouzhuantime = q.front().zhouzhuantime / (double)q.front().runtime;
-
-                weighttotaltime += q.front().weightzhouzhuantime;
-
-//                cout << "此进程已完成！" << endl;
-
-//                cout << "进程" << q.front().id << "的周转时间为：" << q.front().zhouzhuantime << endl;
-
-//                cout << "进程" << q.front().id << "的带权周转时间为: " << q.front().weightzhouzhuantime << endl;
-
-                q.pop();
-
-                times = 0;
-            }
-
-//            cout << "****************************************" << endl;
-
-//            cout << endl;
-
-//            cout << endl;
-
-            if (q.empty())
-
+            q.push(q.front());
+            q.pop();
+            continue;
+        }
+        q.front().begintime = time;
+        while (times != 0)
+        {
+            --times;
+            ++time;
+            --q.front().resttime;
+            if (q.front().resttime == 0)
                 break;
         }
+        q.front().finishtime = time;
 
-//        cout << "**********************************" << endl;
+        emit send_output_data(q.front());//发送信号
 
-//        cout << "平均周转时间：" << totaltime / (double)n << endl;
+        if (q.front().resttime != 0)
+        {
+            q.push(q.front());
+            q.pop();
+        }
+        else
+        {
+            q.front().zhouzhuantime = time - q.front().arrivetime;
+            q.front().weightzhouzhuantime = q.front().zhouzhuantime / (double)q.front().runtime;
+            weighttotaltime += q.front().weightzhouzhuantime;
 
-//        cout << "平均带权周转时间：" << weighttotaltime / (double)n << endl;
+            q.front().waitTime = q.front().zhouzhuantime - q.front().runtime;
 
-//        cout << "**********************************" << endl;
+
+            q.front().sy = false;
+            emit send_output_data(q.front());//发送信号
+            q.pop();
+            times = 0;
+        }
+        if (q.empty())
+            break;
+    }
+
 }

@@ -13,10 +13,27 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="src.qrc">
+    <normaloff>:/star.png</normaloff>:/star.png</iconset>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="1" column="0">
      <spacer name="horizontalSpacer">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>342</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="1" column="2">
+     <spacer name="horizontalSpacer_2">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
@@ -34,19 +51,6 @@
        <string>关闭</string>
       </property>
      </widget>
-    </item>
-    <item row="1" column="2">
-     <spacer name="horizontalSpacer_2">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>342</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
     </item>
     <item row="0" column="0" colspan="3">
      <widget class="QTableWidget" name="output">
@@ -107,7 +111,7 @@
       </column>
       <column>
        <property name="text">
-        <string>状态</string>
+        <string>到达时间</string>
        </property>
       </column>
       <column>
@@ -117,27 +121,17 @@
       </column>
       <column>
        <property name="text">
-        <string>开始运行时间</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
         <string>结束运行时间</string>
        </property>
       </column>
       <column>
        <property name="text">
-        <string>剩余运行时间</string>
+        <string>等待时间</string>
        </property>
       </column>
       <column>
        <property name="text">
-        <string>优先级</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>阻塞时间</string>
+        <string>周转时间</string>
        </property>
       </column>
      </widget>
@@ -156,6 +150,8 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources/>
+ <resources>
+  <include location="src.qrc"/>
+ </resources>
  <connections/>
 </ui>

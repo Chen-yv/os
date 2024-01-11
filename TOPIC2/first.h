@@ -5,7 +5,9 @@
 #include "time_slice.h"
 //#include "QTime"
 #include "runwindow.h"
-#include "second.h"
+#include "sjf.h"
+
+
 #include <QMainWindow>
 
 
@@ -22,7 +24,7 @@ public:
 
     condition outui;
     runwindow runui;
-    second *second_ui;
+
     first(QWidget *parent = nullptr);
     ~first();
 
@@ -32,8 +34,6 @@ private slots:
     void on_exit_clicked();
 
     void on_condition_clicked();
-
-    void on_dispath_currentTextChanged();
 
 private:
     Ui::first *ui;

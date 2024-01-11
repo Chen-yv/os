@@ -21,23 +21,25 @@ SOURCES += \
     main.cpp \
     first.cpp \
     runwindow.cpp \
-    second.cpp \
+    sjf.cpp \
     time_slice.cpp
 
 HEADERS += \
     condition.h \
     first.h \
     runwindow.h \
-    second.h \
+    sjf.h \
     time_slice.h
 
 FORMS += \
     condition.ui \
     first.ui \
-    runwindow.ui \
-    second.ui
+    runwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    src.qrc

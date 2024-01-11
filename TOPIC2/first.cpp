@@ -12,7 +12,7 @@ first::first(QWidget *parent)
     ui->setupUi(this);
     this->setWindowTitle("11组操作系统作业");//设置窗口标题
 
-    this->resize(1100,700);//重设窗口大小
+    this->resize(702,1008);//重设窗口大小
 
     //创建状态栏
     QStatusBar *status = new QStatusBar(this);
@@ -32,57 +32,63 @@ first::first(QWidget *parent)
 
 }
 
-first::~first()
-{
-    delete ui;
-}
+
 
 
 void first::on_submit_clicked()
 {
-    runui.show();
-    Time_slice rundata;
 
-//    rundata的定义在first最前面
-    rundata.n = ui->number_of_progoam->value();
+    if(ui->dispath->currentText() == "时间片轮转调度法"){
+        runui.show();
+        runui.clear();
+        Time_slice rundata;
+        //    rundata的定义在first最前面
+        rundata.n = ui->number_of_progoam->value();
+        rundata.stime = ui->time_slice->value();
+        for (int row = 0; row < rundata.n; row ++) {
+            rundata.process[row].id = ui->input->item(row, 0)->text();
+            rundata.process[row].arrivetime = ui->input->item(row, 1)->text().toInt();
+            rundata.process[row].runtime = ui->input->item(row, 2)->text().toInt();
+            rundata.process[row].resttime = rundata.process[row].runtime;
+            rundata.totaltime += rundata.process[row].runtime;
+            rundata.process[row].row = row;
+        }
 
-    for (int row = 0; row < rundata.n; row ++) {
-        rundata.process[row].id = ui->input->item(row, 0)->text();
-        rundata.process[row].arrivetime = ui->input->item(row, 1)->text().toInt();
-        rundata.process[row].runtime = ui->input->item(row, 2)->text().toInt();
-        rundata.process[row].resttime = rundata.process[row].runtime;
-        rundata.totaltime += rundata.process[row].runtime;
-        rundata.process[row].row = row;
-//        qDebug() << rundata.process[row].id<<rundata.process[row].arrivetime<<rundata.process[row].runtime<<endl;
+        connect(&rundata, &Time_slice::send_output_data, &runui, &runwindow::get_output_data);
+        connect(&rundata, &Time_slice::send_output_data, &outui, &condition::get_output_data);
+        rundata.RR_MAIN();
     }
-    rundata.stime = ui->time_slice->value();
+    else if(ui->dispath->currentText() == "短进程优先调度法"){
+        SJF sjf_rundata;
+        runui.show();
+        sjf_rundata.n = ui->number_of_progoam->value();
 
-//    QTimer timer;
-//    timer.start(1000); // 每秒更新一次数据G
+        vector<SJF::Process>processes(ui->number_of_progoam->value());
 
-    connect(&rundata, &Time_slice::send_output_data, &runui, &runwindow::get_output_data);
-    connect(&rundata, &Time_slice::send_output_data, &outui, &condition::get_output_data);
-    rundata.RR_MAIN();
+        for (int row = 0; row < ui->number_of_progoam->value(); row++) {
+            processes[row].name = ui->input->item(row, 0)->text();
+            processes[row].arrivalTime = ui->input->item(row, 1)->text().toInt();
+            processes[row].burstTime = ui->input->item(row, 2)->text().toInt();
+            processes[row].row = row;
+        }
 
-
+        connect(&sjf_rundata, &SJF::send_sjf_data, &runui, &runwindow::get_output_sjf_data);
+        connect(&sjf_rundata, &SJF::send_sjf_data, &outui, &condition::get_output_sjf_data);
+        sjf_rundata.SJF_MAIN(processes);
+    }
 
 }
 
 void first::on_exit_clicked()
 {
-    this->close();
+    this->~first();
 }
 
 void first::on_condition_clicked()
 {
     outui.show();
 }
-
-void first::on_dispath_currentTextChanged()
+first::~first()
 {
-    if(ui->dispath->currentText() == "短进程优先调度法"){
-        second *second_ui = new second;
-        second_ui->show();
-        this->destroy();
-    }
+    delete ui;
 }
